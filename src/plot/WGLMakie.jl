@@ -17,10 +17,7 @@ macro bind(def, element)
 end
 
 # ╔═╡ 9d306b48-df32-11f0-b15f-7540889fd2b7
-begin
-	using Bonito
-	using WGLMakie
-end
+using WGLMakie
 
 # ╔═╡ ab52259b-27e1-4ddb-b926-5a702f5d2af7
 using PlutoUI
@@ -38,10 +35,10 @@ The objective of the present notebook is to present an alternative using the [Ma
 """
 
 # ╔═╡ 2ed1866c-1d9a-4992-a98d-4492ebe8ca44
-md"Here is an example of interactive plot. You can push the *Live Update* button to get a moving curve. It is taken from [Makie documentation on toggles](https://docs.makie.org/stable/reference/blocks/toggle)."
+md"Here is an example of interactive plot. You can push the *Live Update* button to get a moving curve. It is taken from [Makie documentation on toggles](https://docs.makie.org/stable/reference/blocks/toggle). *You may have to manually run the cell below.*"
 
 # ╔═╡ 048f54ba-45d1-49e2-b19d-7ef634c77cf0
-App() do
+let
 	figurewidth = 600
 	fig = Figure(size=(figurewidth,300))
 	
@@ -65,7 +62,7 @@ App() do
 	    t[] += tick.delta_time
 	end
 
-	DOM.div(fig, style="margin: auto; width:"*string(figurewidth)*"px;")
+	fig
 end
 
 # ╔═╡ d353c065-7802-4f18-8492-008b860b9379
@@ -80,21 +77,20 @@ If you are familiar with Makie for static plots, but not for animations, have a 
 md"## Integration in Pluto"
 
 # ╔═╡ 2220f4b9-02bd-4540-a32e-124b90cd3033
-md"Makie animations can be integrated into Pluto notebooks via the `WGLMakie` backend and `Bonito`'s DOM API."
+md"Makie animations can be integrated almost seamlessly into Pluto notebooks via the `WGLMakie` backend."
 
 # ╔═╡ 13c42895-ad10-4f99-adc2-a3f371987d56
-md"Pluto integration uses `Bonito.App`. All the commands related to the Makie animation (usually starting with `fig = Figure(...)` and ending with `fig`) must be placed in a `App() do ... end` block. Note that all variables defined in the block are defined locally. In particular they are not reactive and the same variable name (e.g. `fig`, `ax`, etc.) can be used in several `App() do ... end` blocks.
+md"We recommend to put all the commands related to the Makie animation (usually starting with `fig = Figure(...)` and ending with `fig`) in a `let ... end` block. Hence all variables defined in the block are defined locally. In particular they are not reactive and the same variable name (e.g. `fig`, `ax`, etc.) can be used in several `let ... end` blocks.
 
 !!! warning
-	- The last command `fig` must be replaced by `DOM.div(fig)`.
-	- Since some interactive components (e.g. `Slider`) are also exported by other packages (e.g. PlutoUI), you may need to write `Makie.Slider` avoid ambiguity.
+	Since some interactive components (e.g. `Slider`) are also exported by other packages (e.g. PlutoUI), you may need to write `Makie.Slider` to avoid ambiguity.
 "
 
 # ╔═╡ 91a90dc6-4f33-403d-b7f2-837fed4a0304
 md"Finally, here is another animation example taken from [Makie documentation on buttons](https://docs.makie.org/stable/reference/blocks/button)."
 
 # ╔═╡ 9d9b338e-c859-4089-aa27-40742dbfd054
-App() do
+let
 	fig = Figure()
 
 	ax = Axis(fig[1, 1])
@@ -116,7 +112,7 @@ App() do
 	barplot!(counts, color = cgrad(:Spectral)[LinRange(0, 1, 5)])
 	ylims!(ax, 0, 20)
 	
-	DOM.div(fig)
+	fig
 end
 
 # ╔═╡ 917f2df5-f63f-4937-b1e0-b60ed4351d9f
