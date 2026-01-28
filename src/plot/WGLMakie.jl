@@ -19,7 +19,7 @@ end
 # ╔═╡ 9d306b48-df32-11f0-b15f-7540889fd2b7
 using WGLMakie
 
-# ╔═╡ ab52259b-27e1-4ddb-b926-5a702f5d2af7
+# ╔═╡ 78ccde0f-fdca-4db3-9af3-caa3a0963b23
 using PlutoUI
 
 # ╔═╡ 5b5f4616-0f66-455a-8e90-4f4027befc51
@@ -74,7 +74,7 @@ md"If you are not familiar with Makie, here is Makie's [basic tutorial](https://
 If you are familiar with Makie for static plots, but not for animations, have a look at Makie's [animation tutorial](https://docs.makie.org/stable/explanations/animation)."
 
 # ╔═╡ 9cf1da97-dcb0-4691-8597-44bc62dff257
-md"## Integration in Pluto"
+md"## Integration in Pluto (without PlutoUI)"
 
 # ╔═╡ 2220f4b9-02bd-4540-a32e-124b90cd3033
 md"Makie animations can be integrated almost seamlessly into Pluto notebooks via the `WGLMakie` backend."
@@ -115,11 +115,44 @@ let
 	fig
 end
 
+# ╔═╡ df840868-75d4-4687-8556-19eeab1e4115
+md"## Integration in Pluto (with PlutoUI)"
+
+# ╔═╡ 9e86e965-7a3e-43bc-930a-5d916273770f
+md"There is an intermediate solution that combines Makie's `Observable` with PlutoUI's interactivity. Here is a simple example with a `PlutoUI.Slider` where we want to plot the integer values between 0 and `val`."
+
+# ╔═╡ b8b581e9-5085-4763-8f46-2aa718925635
+@bind val PlutoUI.Slider(0:10)
+
+# ╔═╡ 86f8bb60-7e4c-4acd-af9c-ada0c589f7a5
+md"Then, we initialize an `Observable`. *The argument `1:1` below can be replaced by `0:0` or `2:25`, etc. It only has to respect the type that we want, i.e. `UnitRange{Int64}` here.*"
+
+# ╔═╡ 96269a69-e678-4a9f-87c2-6215032b42d1
+val_obs = Observable(0:0)
+
+# ╔═╡ b1658a17-b59f-4c35-b7a0-1503e377c731
+md"The following cell automatically updates the content of the observable `val_obs` each time we move the slider. In turn, it updates the plot below."
+
+# ╔═╡ b496ac83-b3c7-4758-994e-7534abc56932
+val_obs[] = 0:val
+
+# ╔═╡ a6937e90-5714-4023-aaf5-02909c53daa7
+scatter(val_obs, axis=(;limits=(0,12,-1,11)))
+
+# ╔═╡ 6d79f301-b6b4-40be-b48e-e194466b5170
+md"
+!!! note 
+	The plot above is internaly updated thanks to the `Observable` type. It is not replotted each time `val` is modified. Compare with:
+	```
+	scatter(1:val, axis=(;limits=(0,12,-1,11)))
+	```
+"
+
 # ╔═╡ 917f2df5-f63f-4937-b1e0-b60ed4351d9f
 md"## Conclusion"
 
 # ╔═╡ 6a54d18f-45ec-4917-843e-d6af2660525c
-md"There are two main drawbacks when using Makie animations:
+md"There are two main drawbacks when using *pure* Makie animations:
 1. it relies on the heavy Makie ecosystem (long to precompile and run),
 2. it is harder to get global dependencies in your animations than if you are using PlutoUI and reactivity.
 Hence, if you plan to share your notebook you should avoid to use Makie.
@@ -130,12 +163,10 @@ However, if you plan to produce slides for a presentation, using Makie is a grea
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
 [deps]
-Bonito = "824d6782-a2ef-11e9-3a09-e5662e0c26f8"
 PlutoUI = "7f904dfe-b85e-4ff6-b463-dae2292396a8"
 WGLMakie = "276b4fcb-3e11-5398-bf8b-a0c2d153d008"
 
 [compat]
-Bonito = "~4.1.14"
 PlutoUI = "~0.7.76"
 WGLMakie = "~0.13.8"
 """
@@ -146,7 +177,7 @@ PLUTO_MANIFEST_TOML_CONTENTS = """
 
 julia_version = "1.12.3"
 manifest_format = "2.0"
-project_hash = "e282179be6be3309f6ceb8f615e9c9c05c3bed64"
+project_hash = "a56abc952d3fd901bd7e56bb84dc5c622163f44a"
 
 [[deps.AbstractFFTs]]
 deps = ["LinearAlgebra"]
@@ -1811,8 +1842,17 @@ version = "4.1.0+0"
 # ╟─13c42895-ad10-4f99-adc2-a3f371987d56
 # ╟─91a90dc6-4f33-403d-b7f2-837fed4a0304
 # ╠═9d9b338e-c859-4089-aa27-40742dbfd054
+# ╟─df840868-75d4-4687-8556-19eeab1e4115
+# ╠═78ccde0f-fdca-4db3-9af3-caa3a0963b23
+# ╟─9e86e965-7a3e-43bc-930a-5d916273770f
+# ╠═b8b581e9-5085-4763-8f46-2aa718925635
+# ╟─86f8bb60-7e4c-4acd-af9c-ada0c589f7a5
+# ╠═96269a69-e678-4a9f-87c2-6215032b42d1
+# ╟─b1658a17-b59f-4c35-b7a0-1503e377c731
+# ╠═b496ac83-b3c7-4758-994e-7534abc56932
+# ╠═a6937e90-5714-4023-aaf5-02909c53daa7
+# ╟─6d79f301-b6b4-40be-b48e-e194466b5170
 # ╟─917f2df5-f63f-4937-b1e0-b60ed4351d9f
 # ╟─6a54d18f-45ec-4917-843e-d6af2660525c
-# ╟─ab52259b-27e1-4ddb-b926-5a702f5d2af7
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
